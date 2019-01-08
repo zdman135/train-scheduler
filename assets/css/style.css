@@ -1,0 +1,24 @@
+.fa-trash {
+    cursor: pointer;
+    outline: none;
+}
+
+.btn {
+    background-color: #81452D;
+    color: white;
+    border-color: #81452D;
+}
+
+.btn:focus {
+    box-shadow: 0 0 8px 0 #81452D;
+}
+
+.jumbotron {
+    background-color: #81452D; 
+    color: white; 
+}
+
+input[type=text]:focus {
+    border-color: #81452D;
+    box-shadow: 0 0 8px 0 #81452D;
+}

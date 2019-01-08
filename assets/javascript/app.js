@@ -36,7 +36,8 @@ function createTrainRow(childFields, nextArrivalTime, minutesToNextArrival) {
         $('<td>').text(childFields.destinationName),
         $('<td>').text(childFields.frequency),
         $('<td>').text(nextArrivalTime),
-        $('<td>').text(minutesToNextArrival)
+        $('<td>').text(minutesToNextArrival),
+        $('<td id="'+ childFields.keyId +'" class="fa fa-trash fa-lg">')
     );
 
     $('tbody').append(newRow);
@@ -50,14 +51,16 @@ $('#add-train-btn').on("click", function(e) {
     trainTime = $('#time-input').val().trim();
     frequency = parseInt($('#frequency-input').val().trim());
 
+    var reference = database.ref().push();
     var saveTrainObj = {
         trainName: toTitleCase(trainName),
         destinationName: toTitleCase(destinationName),
         trainTime: trainTime,
-        frequency: frequency
+        frequency: frequency,
+        keyId: reference.key
     }
 
-    database.ref().push(saveTrainObj);
+    reference.set(saveTrainObj);
 
     $('#train-name-input').val("");
     $('#destination-input').val("");
@@ -76,7 +79,6 @@ database.ref().on("child_added", function(childSnapshot) {
         nextArrivalTime = nextArrivalTime.format("hh:mm a").toUpperCase();
 
         createTrainRow(childFields, nextArrivalTime, minutesToNextArrival);        
-
     } else {
         var nextArrivalTime = enteredTime.format("hh:mm a").toUpperCase();
         var minutesToNextArrival = calculateTimeDifference(enteredTime, currentTime);
@@ -84,3 +86,12 @@ database.ref().on("child_added", function(childSnapshot) {
         createTrainRow(childFields, nextArrivalTime, minutesToNextArrival);        
     }
 });
+
+$(document).on("click", '.fa-trash', function() {
+    var keyId = $(this).attr('id');
+    database.ref(keyId).remove().then(function() {
+        location.reload();
+    }).catch(function(error) {
+      console.log("Remove failed: " + error.message)
+    });
+})
