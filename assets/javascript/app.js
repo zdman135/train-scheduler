@@ -11,28 +11,11 @@ firebase.initializeApp(config);
 var database = firebase.database();
 var trainName, destinationName, trainTime, frequency;
 
-$('#add-train-btn').on("click", function(e) {
-    e.preventDefault();
-
-    trainName = $('#train-name-input').val().trim();
-    destinationName = $('#destination-input').val().trim();
-    trainTime = $('#time-input').val().trim();
-    frequency = parseInt($('#frequency-input').val().trim());
-
-    var saveTrainObj = {
-        trainName: trainName,
-        destinationName: destinationName,
-        trainTime: trainTime,
-        frequency: frequency
-    }
-
-    database.ref().push(saveTrainObj);
-
-    $('#train-name-input').val("");
-    $('#destination-input').val("");
-    $('#time-input').val("");
-    $('#frequency-input').val("");
-});
+function toTitleCase(str) {
+    return str.replace(/\w\S*/g, function(txt){
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+}
 
 function calculateNextTime(frequency, enteredTime, currentTime) {
     while (moment(enteredTime, "HH:mm").isBefore(moment(currentTime, "HH:mm"))) {
@@ -58,6 +41,29 @@ function createTrainRow(childFields, nextArrivalTime, minutesToNextArrival) {
 
     $('tbody').append(newRow);
 }
+
+$('#add-train-btn').on("click", function(e) {
+    e.preventDefault();
+
+    trainName = $('#train-name-input').val().trim();
+    destinationName = $('#destination-input').val().trim();
+    trainTime = $('#time-input').val().trim();
+    frequency = parseInt($('#frequency-input').val().trim());
+
+    var saveTrainObj = {
+        trainName: toTitleCase(trainName),
+        destinationName: toTitleCase(destinationName),
+        trainTime: trainTime,
+        frequency: frequency
+    }
+
+    database.ref().push(saveTrainObj);
+
+    $('#train-name-input').val("");
+    $('#destination-input').val("");
+    $('#time-input').val("");
+    $('#frequency-input').val("");
+});
 
 database.ref().on("child_added", function(childSnapshot) {
     var childFields = childSnapshot.val();
